@@ -5,21 +5,35 @@ public enum NivelUsuario {
     USUARIO_ADMIN("Administrador"),
     USUARIO_MASTER("Master");
 
-    private final String roleName;
+    private final String descricao;
+    NivelUsuario(String descricao) {
+        this.descricao = descricao;
+    }
 
-    NivelUsuario(String roleName) {
-    this.roleName = roleName;
+    public  String getDescricao() {
+        return descricao;
     }
 
     public String getRoleName() {
+
         return roleName;
     }
 
-    public static NivelUsuario fromRoleName(String roleName) {
+    public static NivelUsuario fromRoleNameSpring(String roleNameSpring) {
         for (NivelUsuario nivel : NivelUsuario.values()) {
-            if (nivel.getRoleName().equalsIgnoreCase(roleName)) {return nivel;
+            if (nivel.name().equalsIgnoreCase(roleNameSpring)) {
+                return nivel;
+            }
         }
+        throw new IllegalArgumentException("Nivel de usuário Spring Security desconhecido: " + roleNameSpring);
     }
-    throw new IllegalArgumentException("Nível de usuário desconhecido: " + roleName);
+
+    public static NivelUsuario fromDescricao(String descricao) {
+        for (NivelUsuario nivel : NivelUsuario.values()) {
+            if (nivel.getDescricao().equalsIgnoreCase(descricao)) {
+                return nivel;
+            }
+        }
+        throw new IllegalArgumentException("Descrição de nivel de usuário desconhecido: " + descricao);
     }
 }
