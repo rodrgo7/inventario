@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: gerenciador-estoque
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/estoquedb
+      username: admin
+      password:
+  kafka:
+    bootstrap-servers: localhost:9092
