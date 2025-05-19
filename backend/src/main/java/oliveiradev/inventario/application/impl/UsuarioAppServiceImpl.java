@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -32,16 +33,17 @@ public class UsuarioAppServiceImpl implements UsuarioAppService {
     }
 
     @Override
-    @Transactional // Garante que a operação seja atômica
+    @Transactional
     public UsuarioRespostaDTO criarUsuario(UsuarioCriacaoDTO dto) throws EmailJaCadastradoException {
-        if (dto.nome() == null || dto.nome().isBlank()) {
+        Objects.requireNonNull(dto.nome(), "Nome do usuário não pode ser nulo.");
+        Objects.requireNonNull(dto.email(), "Email do usuário não pode ser nulo.");
+        Objects.requireNonNull(dto.senha(), "Senha do usuário não pode ser nula.");
+
+        if (dto.nome().isBlank()) {
             throw new IllegalArgumentException("Nome do usuário não pode ser vazio.");
         }
-        if (dto.email() == null || dto.email().isBlank() || !dto.email().contains("@")) {
+        if (dto.email().isBlank() || !dto.email().contains("@")) {
             throw new IllegalArgumentException("Email do usuário inválido.");
-        }
-        if (dto.senha() == null || dto.senha().isBlank()) {
-            throw new IllegalArgumentException("Senha do usuário não pode ser vazia.");
         }
         if (dto.senha().length() < 6) {
             throw new IllegalArgumentException("Senha deve ter pelo menos 6 caracteres.");
@@ -67,39 +69,52 @@ public class UsuarioAppServiceImpl implements UsuarioAppService {
         }
 
         Usuario usuarioSalvo = usuarioRepository.save(novoUsuario);
-
-        return new UsuarioRespostaDTO(
-                usuarioSalvo.getId(),
-                usuarioSalvo.getNome(),
-                usuarioSalvo.getEmail(),
-                new HashSet<>(usuarioSalvo.getNiveis()),
-                usuarioSalvo.getDataCriacao(),
-                usuarioSalvo.getDataModificacao()
-        );
+        return converterParaRespostaDTO(usuarioSalvo);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<UsuarioRespostaDTO> buscarUsuarioPorId(String id) {
-        return Optional.empty();
+        Objects.requireNonNull(id, "ID do usuário não pode ser nulo.");
+        return usuarioRepository.findById(id)
+                .map(this::converterParaRespostaDTO);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<UsuarioRespostaDTO> buscarUsuarioPorEmail(String email) {
-        return Optional.empty();
+        Objects.requireNonNull(email, "Email do usuário não pode ser nulo.");
+        String emailNormalizado = email.trim().toLowerCase();
+        return usuarioRepository.findByEmail(emailNormalizado)
+                .map(this::converterParaRespostaDTO);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<UsuarioRespostaDTO> listarTodosUsuarios() {
-        return Collections.emptyList();
+        return usuarioRepository.findAll()
+                .stream()
+                .map(this::converterParaRespostaDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
     @Transactional
     public UsuarioRespostaDTO atualizarNiveisUsuario(String usuarioId, Set<NivelUsuario> novosNiveis)
-            throws RecursoNaoEncontradoException {
-        throw new UnsupportedOperationException("Ainda não implementado");
+            throws RecursoNaoEncontradoException /*, RegraDeNegocioException */ {
+        Objects.requireNonNull(usuarioId, "ID do usuário não pode ser nulo.");
+        Objects.requireNonNull(novosNiveis, "Conjunto de novos níveis não pode ser nulo.");
+
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Usuário com ID " + usuarioId + " não encontrado."));
+
+        usuario.definirNiveis(novosNiveis);
+
+        Usuario usuarioAtualizado = usuarioRepository.save(usuario);
+        return converterParaRespostaDTO(usuarioAtualizado);
     }
 
+    // Método helper para converter Usuario para UsuarioRespostaDTO
     private UsuarioRespostaDTO converterParaRespostaDTO(Usuario usuario) {
         if (usuario == null) {
             return null;
@@ -108,7 +123,7 @@ public class UsuarioAppServiceImpl implements UsuarioAppService {
                 usuario.getId(),
                 usuario.getNome(),
                 usuario.getEmail(),
-                new HashSet<>(usuario.getNiveis()),
+                usuario.getNiveis(),
                 usuario.getDataCriacao(),
                 usuario.getDataModificacao()
         );
