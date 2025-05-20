@@ -5,11 +5,12 @@ spring:
     mongodb:
       uri: mongodb://localhost:27017/estoquedb
       username: admin
-      password: 123456
+      password:
   kafka:
     bootstrap-servers: localhost:9092
-  app:
-    jwt:
-      secret: qur8LP7qykR7SQGxiQ+pn2Lyi2wel7fiJAKBUpgjlDszoFUVcV9IOiL7KDxQWIPKTYkzc7iyPDBK6ABUJ7L+uQ==
-      expiration-ms: 3600000 # 1 hora em milissegundos
-      # refresh-token-expiration-ms: 86400000 # Ex: 24 horas, se for implementar refresh tokens
+
+app:
+  jwt:
+    secret: qur8LP7qykR7SQGxiQ+pn2Lyi2wel7fiJAKBUpgjlDszoFUVcV9IOiL7KDxQWIPKTYkzc7iyPDBK6ABUJ7L+uQ==
+    expiration-ms: 3600000 # 1 hora em milissegundos
+    # refresh-token-expiration-ms: 86400000 # Ex: 24 horas, se for implementar refresh tokens
