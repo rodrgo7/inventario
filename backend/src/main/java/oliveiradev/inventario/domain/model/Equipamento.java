@@ -19,27 +19,27 @@ public class Equipamento {
     @Id
     private String id;
 
-    @Indexed(unique = true)
+    @Indexed
     private String nome;
 
-    @Indexed(unique = true)
+    @Indexed(unique = true) // Número de série DEVE ser único
     private String numeroDeSerie;
 
     private String descricaoDetalhada;
 
+    // Campos de Auditoria Básica
     @CreatedDate
-    private LocalDateTime dataInclusaoNoSistema;
+    private LocalDateTime dataInclusaoNoSistema; // Data de criação do registro no BD
 
     @LastModifiedDate
     private LocalDateTime dataUltimaModificacao;
 
     @CreatedBy
-    private String criadoPorUsuario;
+    private String criadoPorUsuario; // Email do usuário que criou
 
     @LastModifiedBy
-    private String modificadoPorUsuario;
+    private String modificadoPorUsuario; // Email do usuário que modificou pela última vez
 
-    // Lista para armazenar os logs de alterações específicos do equipamento
     private List<LogAlteracao> logs;
 
     public Equipamento() {
@@ -63,12 +63,16 @@ public class Equipamento {
         this.logs = new ArrayList<>();
     }
 
-    // Método para adicionar uma entrada de log
     public void adicionarLog(String usuarioResponsavel, String descricaoDaAlteracao) {
+        Objects.requireNonNull(usuarioResponsavel, "Usuário responsável pelo log não pode ser nulo.");
+        Objects.requireNonNull(descricaoDaAlteracao, "Descrição do log não pode ser nula.");
+        if (descricaoDaAlteracao.trim().isEmpty()) {
+            throw new IllegalArgumentException("Descrição do log não pode ser vazia.");
+        }
         if (this.logs == null) {
             this.logs = new ArrayList<>();
         }
-        this.logs.add(new LogAlteracao(LocalDateTime.now(), usuarioResponsavel, descricaoDaAlteracao));
+        this.logs.add(new LogAlteracao(LocalDateTime.now(), usuarioResponsavel, descricaoDaAlteracao.trim()));
     }
 
     public String getId() {
@@ -104,38 +108,55 @@ public class Equipamento {
     }
 
     public List<LogAlteracao> getLogs() {
-        // Retorna uma cópia imutável para proteger a lista interna
         return Collections.unmodifiableList(new ArrayList<>(this.logs != null ? this.logs : Collections.emptyList()));
     }
 
     public void alterarNome(String novoNome, String usuarioQueAlterou) {
         Objects.requireNonNull(novoNome, "Novo nome não pode ser nulo.");
-        if (novoNome.trim().isEmpty()) {
+        Objects.requireNonNull(usuarioQueAlterou, "Usuário que alterou não pode ser nulo.");
+        String nomeAntigo = this.nome;
+        String novoNomeTrimmed = novoNome.trim();
+
+        if (novoNomeTrimmed.isEmpty()) {
             throw new IllegalArgumentException("Novo nome não pode ser vazio.");
         }
-        if (!this.nome.equals(novoNome.trim())) {
-            adicionarLog(usuarioQueAlterou, "Nome alterado de '" + this.nome + "' para '" + novoNome.trim() + "'.");
-            this.nome = novoNome.trim();
+        if (!Objects.equals(nomeAntigo, novoNomeTrimmed)) {
+            this.nome = novoNomeTrimmed;
+            adicionarLog(usuarioQueAlterou, "Nome alterado de '" + nomeAntigo + "' para '" + this.nome + "'.");
         }
     }
 
     public void alterarNumeroDeSerie(String novoNumeroDeSerie, String usuarioQueAlterou) {
         Objects.requireNonNull(novoNumeroDeSerie, "Novo número de série não pode ser nulo.");
-        if (novoNumeroDeSerie.trim().isEmpty()) {
+        Objects.requireNonNull(usuarioQueAlterou, "Usuário que alterou não pode ser nulo.");
+        String serialAntigo = this.numeroDeSerie;
+        String novoSerialTrimmed = novoNumeroDeSerie.trim();
+
+        if (novoSerialTrimmed.isEmpty()) {
             throw new IllegalArgumentException("Novo número de série não pode ser vazio.");
         }
-        // A unicidade do novo número de série deve ser verificada no serviço de aplicação
-        if (!this.numeroDeSerie.equals(novoNumeroDeSerie.trim())) {
-            adicionarLog(usuarioQueAlterou, "Número de série alterado de '" + this.numeroDeSerie + "' para '" + novoNumeroDeSerie.trim() + "'.");
-            this.numeroDeSerie = novoNumeroDeSerie.trim();
+        // A verificação de unicidade do novo número de série deve ser feita pelo SERVIÇO
+        if (!Objects.equals(serialAntigo, novoSerialTrimmed)) {
+            this.numeroDeSerie = novoSerialTrimmed;
+            adicionarLog(usuarioQueAlterou, "Número de série alterado de '" + serialAntigo + "' para '" + this.numeroDeSerie + "'.");
         }
     }
 
     public void alterarDescricaoDetalhada(String novaDescricao, String usuarioQueAlterou) {
-        String novaDescricaoTrimmed = (novaDescricao != null) ? novaDescricao.trim() : null;
-        if (!Objects.equals(this.descricaoDetalhada, novaDescricaoTrimmed)) {
-            adicionarLog(usuarioQueAlterou, "Descrição detalhada alterada."); // Pode logar o antes/depois se necessário
-            this.descricaoDetalhada = novaDescricaoTrimmed;
+        Objects.requireNonNull(usuarioQueAlterou, "Usuário que alterou não pode ser nulo.");
+        String descricaoAntiga = this.descricaoDetalhada;
+        // Permite que a nova descrição seja nula ou uma string vazia para limpar o campo
+        String novaDescricaoTratada = (novaDescricao != null) ? novaDescricao.trim() : null;
+
+        if (!Objects.equals(descricaoAntiga, novaDescricaoTratada)) {
+            this.descricaoDetalhada = novaDescricaoTratada;
+            if (descricaoAntiga == null && novaDescricaoTratada != null && !novaDescricaoTratada.isEmpty()) {
+                adicionarLog(usuarioQueAlterou, "Descrição detalhada definida.");
+            } else if (descricaoAntiga != null && (novaDescricaoTratada == null || novaDescricaoTratada.isEmpty())) {
+                adicionarLog(usuarioQueAlterou, "Descrição detalhada removida.");
+            } else {
+                adicionarLog(usuarioQueAlterou, "Descrição detalhada alterada.");
+            }
         }
     }
 
@@ -144,11 +165,10 @@ public class Equipamento {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Equipamento that = (Equipamento) o;
-        // Se o ID existe, é a melhor forma de verificar igualdade.
-        // Caso contrário (objeto não persistido), o número de série (que deve ser único) é um bom candidato.
         if (id != null) {
             return Objects.equals(id, that.id);
         }
+        // Se ambos os IDs são nulos, compara pelo número de série (que deve ser único)
         return Objects.equals(numeroDeSerie, that.numeroDeSerie);
     }
 

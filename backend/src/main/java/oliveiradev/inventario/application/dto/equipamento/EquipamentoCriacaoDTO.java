@@ -1,6 +1,7 @@
 package oliveiradev.inventario.application.dto.equipamento;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern; // Para expressões regulares
 import jakarta.validation.constraints.Size;
 
 public record EquipamentoCriacaoDTO(
@@ -10,6 +11,8 @@ public record EquipamentoCriacaoDTO(
 
         @NotBlank(message = "O número de série não pode estar em branco.")
         @Size(min = 1, max = 100, message = "O número de série deve ter entre 1 e 100 caracteres.")
+
+        @Pattern(regexp = "^[A-Z0-9\\-]+$", message = "Número de série deve conter apenas letras maiúsculas, números e hífens.")
         String numeroDeSerie,
 
         @Size(max = 500, message = "A descrição detalhada não pode exceder 500 caracteres.")
