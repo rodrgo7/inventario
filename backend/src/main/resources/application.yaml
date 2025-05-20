@@ -6,6 +6,11 @@ spring:
       uri: mongodb://localhost:27017/estoquedb
       username: admin
       password:
+  logging:
+    level:
+      org.springframework.security: DEBUG # Mostra mais detalhes do Spring Security
+      oliveiradev.inventario.infra.security: DEBUG # Mostra logs DEBUG do seu pacote de segurança
+      oliveiradev.inventario.interfaces.controller: DEBUG # Mostra logs DEBUG dos seus controllers
   kafka:
     bootstrap-servers: localhost:9092
 
