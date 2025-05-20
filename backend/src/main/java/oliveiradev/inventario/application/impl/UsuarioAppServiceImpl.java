@@ -1,7 +1,7 @@
 package oliveiradev.inventario.application.impl;
 
-import oliveiradev.inventario.application.dto.UsuarioCriacaoDTO;
-import oliveiradev.inventario.application.dto.UsuarioRespostaDTO;
+import oliveiradev.inventario.application.dto.usuario.UsuarioCriacaoDTO;
+import oliveiradev.inventario.application.dto.usuario.UsuarioRespostaDTO;
 import oliveiradev.inventario.application.exception.EmailJaCadastradoException;
 import oliveiradev.inventario.application.exception.RecursoNaoEncontradoException;
 import oliveiradev.inventario.application.service.UsuarioAppService;
@@ -13,8 +13,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;

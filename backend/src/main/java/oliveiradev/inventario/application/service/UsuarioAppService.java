@@ -1,7 +1,7 @@
 package oliveiradev.inventario.application.service;
 
-import oliveiradev.inventario.application.dto.UsuarioCriacaoDTO;
-import oliveiradev.inventario.application.dto.UsuarioRespostaDTO;
+import oliveiradev.inventario.application.dto.usuario.UsuarioCriacaoDTO;
+import oliveiradev.inventario.application.dto.usuario.UsuarioRespostaDTO;
 import oliveiradev.inventario.application.exception.EmailJaCadastradoException;
 import oliveiradev.inventario.application.exception.RecursoNaoEncontradoException;
 import oliveiradev.inventario.domain.model.NivelUsuario;

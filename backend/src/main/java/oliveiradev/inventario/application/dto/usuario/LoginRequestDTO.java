@@ -1,6 +1,6 @@
-package oliveiradev.inventario.application.dto;
+package oliveiradev.inventario.application.dto.usuario;
 
-import jakarta.validation.constraints.NotBlank; // Importação para validação
+import jakarta.validation.constraints.NotBlank;
 
 public record LoginRequestDTO(
         @NotBlank(message = "O email não pode estar em branco.")

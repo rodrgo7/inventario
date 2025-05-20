@@ -1,9 +1,9 @@
 package oliveiradev.inventario.interfaces.controller;
 
-import oliveiradev.inventario.application.dto.LoginRequestDTO;
+import oliveiradev.inventario.application.dto.usuario.LoginRequestDTO;
 import oliveiradev.inventario.application.dto.JwtAuthenticationResponseDTO;
-import oliveiradev.inventario.application.dto.UsuarioCriacaoDTO;
-import oliveiradev.inventario.application.dto.UsuarioRespostaDTO;
+import oliveiradev.inventario.application.dto.usuario.UsuarioCriacaoDTO;
+import oliveiradev.inventario.application.dto.usuario.UsuarioRespostaDTO;
 import oliveiradev.inventario.application.exception.EmailJaCadastradoException;
 import oliveiradev.inventario.application.service.UsuarioAppService;
 import oliveiradev.inventario.infra.security.jwt.JwtTokenProvider;

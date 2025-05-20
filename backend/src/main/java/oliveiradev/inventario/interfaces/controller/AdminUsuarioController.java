@@ -1,6 +1,6 @@
 package oliveiradev.inventario.interfaces.controller;
 
-import oliveiradev.inventario.application.dto.UsuarioRespostaDTO;
+import oliveiradev.inventario.application.dto.usuario.UsuarioRespostaDTO;
 import oliveiradev.inventario.application.exception.RecursoNaoEncontradoException;
 import oliveiradev.inventario.application.exception.RegraDeNegocioException;
 import oliveiradev.inventario.application.service.UsuarioAppService;
