@@ -1,6 +1,6 @@
 package oliveiradev.inventario.domain.repository;
 
-import oliveiradev.inventario.domain.model.Equipamento;
+import oliveiradev.inventario.domain.model.equipamentos.Equipamento;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;

@@ -4,7 +4,7 @@ import oliveiradev.inventario.application.dto.usuario.UsuarioCriacaoDTO;
 import oliveiradev.inventario.application.dto.usuario.UsuarioRespostaDTO;
 import oliveiradev.inventario.application.exception.EmailJaCadastradoException;
 import oliveiradev.inventario.application.exception.RecursoNaoEncontradoException;
-import oliveiradev.inventario.domain.model.NivelUsuario;
+import oliveiradev.inventario.domain.model.enums.NivelUsuario;
 
 import java.util.List;
 import java.util.Optional;

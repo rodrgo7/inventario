@@ -1,6 +1,6 @@
 package oliveiradev.inventario.application.dto.usuario;
 
-import oliveiradev.inventario.domain.model.NivelUsuario;
+import oliveiradev.inventario.domain.model.enums.NivelUsuario;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

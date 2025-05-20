@@ -1,4 +1,4 @@
-package oliveiradev.inventario.domain.model;
+package oliveiradev.inventario.domain.model.enums;
 
 public enum NivelUsuario {
     USUARIO_PADRAO("Usuario Padrão"),

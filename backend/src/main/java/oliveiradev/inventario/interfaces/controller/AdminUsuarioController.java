@@ -4,7 +4,7 @@ import oliveiradev.inventario.application.dto.usuario.UsuarioRespostaDTO;
 import oliveiradev.inventario.application.exception.RecursoNaoEncontradoException;
 import oliveiradev.inventario.application.exception.RegraDeNegocioException;
 import oliveiradev.inventario.application.service.UsuarioAppService;
-import oliveiradev.inventario.domain.model.NivelUsuario;
+import oliveiradev.inventario.domain.model.enums.NivelUsuario;
 
 import jakarta.validation.Valid;
 

@@ -7,7 +7,7 @@ import oliveiradev.inventario.application.dto.equipamento.LogAlteracaoDTO; // Ce
 import oliveiradev.inventario.application.exception.RecursoNaoEncontradoException;
 import oliveiradev.inventario.application.exception.RegraDeNegocioException;
 import oliveiradev.inventario.application.service.EquipamentoAppService;
-import oliveiradev.inventario.domain.model.Equipamento;
+import oliveiradev.inventario.domain.model.equipamentos.Equipamento;
 // LogAlteracao da entidade não é usado diretamente aqui, mas sim o DTO LogAlteracaoDTO
 import oliveiradev.inventario.domain.repository.EquipamentoRepository;
 

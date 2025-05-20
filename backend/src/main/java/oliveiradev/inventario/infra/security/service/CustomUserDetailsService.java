@@ -1,7 +1,6 @@
 package oliveiradev.inventario.infra.security.service;
 
-import oliveiradev.inventario.domain.model.NivelUsuario;
-import oliveiradev.inventario.domain.model.Usuario;
+import oliveiradev.inventario.domain.model.usuarios.Usuario;
 import oliveiradev.inventario.domain.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
