@@ -1,6 +1,5 @@
 package oliveiradev.inventario.application.impl.equipamentos;
 
-import oliveiradev.inventario.domain.model.equipamentos.LogAlteracao;
 import oliveiradev.inventario.application.dto.equipamento.EquipamentoAtualizacaoDTO;
 import oliveiradev.inventario.application.dto.equipamento.EquipamentoCriacaoDTO;
 import oliveiradev.inventario.application.dto.equipamento.EquipamentoRespostaDTO;
@@ -8,24 +7,29 @@ import oliveiradev.inventario.application.exception.RecursoNaoEncontradoExceptio
 import oliveiradev.inventario.application.exception.RegraDeNegocioException;
 import oliveiradev.inventario.application.impl.EquipamentoAppServiceImpl;
 import oliveiradev.inventario.domain.model.equipamentos.Equipamento;
+import oliveiradev.inventario.domain.model.equipamentos.LogAlteracao;
 import oliveiradev.inventario.domain.repository.EquipamentoRepository;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User; // User do Spring Security
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -42,12 +46,13 @@ class EquipamentoAppServiceImplTest {
     private Authentication authentication;
     @Mock
     private SecurityContext securityContext;
-
     @InjectMocks
     private EquipamentoAppServiceImpl equipamentoAppService;
+
     private EquipamentoCriacaoDTO equipamentoCriacaoDTO;
-    private Equipamento equipamentoSalvo;
     private UserDetails mockUserDetails;
+    private final String mockUserEmail = "admin@teste.com";
+    private final String mockEquipId = "equipIdSimulado";
 
     @BeforeEach
     void setUp() {
@@ -57,132 +62,202 @@ class EquipamentoAppServiceImplTest {
                 "Monitor curvo de alta resolução"
         );
 
-        // Para simular o usuário logado
-        mockUserDetails = new User("admin@teste.com", "password", Collections.emptyList());
+        mockUserDetails = new User(mockUserEmail, "password", Collections.emptyList());
         when(securityContext.getAuthentication()).thenReturn(authentication);
         when(authentication.getPrincipal()).thenReturn(mockUserDetails);
         when(authentication.isAuthenticated()).thenReturn(true);
         SecurityContextHolder.setContext(securityContext);
-
-        equipamentoSalvo = new Equipamento(
-                equipamentoCriacaoDTO.nome(),
-                equipamentoCriacaoDTO.numeroDeSerie(),
-                equipamentoCriacaoDTO.descricaoDetalhada()
-        );
     }
 
-    private Equipamento mockEquipamentoRetornadoPeloSave(String id, Equipamento dadosBase, String usuarioLogado) {
+    @AfterEach
+    void tearDown() {
+        // Limpa o contexto de segurança para não afetar outros testes
+        SecurityContextHolder.clearContext();
+    }
+
+
+    // Helper para criar um mock de Equipamento configurado para retornos
+    private Equipamento mockEquipamentoConfigurado(String id, EquipamentoCriacaoDTO dto, String usuarioLogado, int numLogsIniciais) {
         Equipamento mockEquip = mock(Equipamento.class);
         when(mockEquip.getId()).thenReturn(id);
-        when(mockEquip.getNome()).thenReturn(dadosBase.getNome());
-        when(mockEquip.getNumeroDeSerie()).thenReturn(dadosBase.getNumeroDeSerie());
-        when(mockEquip.getDescricaoDetalhada()).thenReturn(dadosBase.getDescricaoDetalhada());
-        when(mockEquip.getDataInclusaoNoSistema()).thenReturn(LocalDateTime.now().minusHours(1)); // Simula
-        when(mockEquip.getDataUltimaModificacao()).thenReturn(LocalDateTime.now()); // Simula
-        when(mockEquip.getCriadoPorUsuario()).thenReturn(usuarioLogado); // Simula
-        when(mockEquip.getModificadoPorUsuario()).thenReturn(usuarioLogado); // Simula
-        // Simula a lista de logs; o primeiro log seria o de criação.
-        List<LogAlteracao> logsSimulados = new ArrayList<>();
-        logsSimulados.add(new LogAlteracao(LocalDateTime.now().minusHours(1), usuarioLogado, "Equipamento registrado no sistema por " + usuarioLogado + "."));
-        when(mockEquip.getLogs()).thenReturn(logsSimulados);
+        when(mockEquip.getNome()).thenReturn(dto.nome());
+        when(mockEquip.getNumeroDeSerie()).thenReturn(dto.numeroDeSerie());
+        when(mockEquip.getDescricaoDetalhada()).thenReturn(dto.descricaoDetalhada());
+        when(mockEquip.getDataInclusaoNoSistema()).thenReturn(LocalDateTime.now().minusMinutes(5));
+        when(mockEquip.getDataUltimaModificacao()).thenReturn(LocalDateTime.now().minusMinutes(1));
+        when(mockEquip.getCriadoPorUsuario()).thenReturn(usuarioLogado);
+        when(mockEquip.getModificadoPorUsuario()).thenReturn(usuarioLogado);
+        List<LogAlteracao> logs = new ArrayList<>();
+        if (numLogsIniciais > 0) {
+            logs.add(new LogAlteracao(LocalDateTime.now().minusMinutes(5), usuarioLogado, "Equipamento registrado no sistema por " + usuarioLogado + "."));
+        }
+        when(mockEquip.getLogs()).thenReturn(logs);
         return mockEquip;
     }
 
+    @Nested
+    @DisplayName("Testes para criarEquipamento")
+    class CriarEquipamentoTests {
+        @Test
+        @DisplayName("Deve criar um equipamento com sucesso")
+        void criarEquipamento_ComDadosValidos_DeveRetornarDTO() {
+            when(equipamentoRepository.findByNumeroDeSerie(equipamentoCriacaoDTO.numeroDeSerie())).thenReturn(Optional.empty());
 
-    @Test
-    @DisplayName("Deve criar um equipamento com sucesso")
-    void criarEquipamento_ComDadosValidos_DeveRetornarEquipamentoRespostaDTO() {
-        when(equipamentoRepository.findByNumeroDeSerie(equipamentoCriacaoDTO.numeroDeSerie())).thenReturn(Optional.empty());
+            ArgumentCaptor<Equipamento> captor = ArgumentCaptor.forClass(Equipamento.class);
+            // O save deve retornar o equipamento com ID, datas e usuário de auditoria (simulados no mock)
+            Equipamento equipamentoRetornadoPeloSave = mockEquipamentoConfigurado(mockEquipId, equipamentoCriacaoDTO, mockUserEmail, 1);
+            when(equipamentoRepository.save(captor.capture())).thenReturn(equipamentoRetornadoPeloSave);
 
-        ArgumentCaptor<Equipamento> equipamentoCaptor = ArgumentCaptor.forClass(Equipamento.class);
-        Equipamento equipamentoMockRetorno = mockEquipamentoRetornadoPeloSave("idEquipSimulado", equipamentoSalvo, "admin@teste.com");
-        when(equipamentoRepository.save(equipamentoCaptor.capture())).thenReturn(equipamentoMockRetorno);
+            EquipamentoRespostaDTO resposta = equipamentoAppService.criarEquipamento(equipamentoCriacaoDTO);
 
-        EquipamentoRespostaDTO respostaDTO = equipamentoAppService.criarEquipamento(equipamentoCriacaoDTO);
+            assertNotNull(resposta);
+            assertEquals(mockEquipId, resposta.id());
+            assertEquals(equipamentoCriacaoDTO.nome(), resposta.nome());
+            assertEquals(mockUserEmail, resposta.criadoPorUsuario());
+            assertEquals(1, resposta.logs().size());
+            assertEquals("Equipamento registrado no sistema por " + mockUserEmail + ".", resposta.logs().get(0).descricao());
 
-        assertNotNull(respostaDTO);
-        assertEquals("idEquipSimulado", respostaDTO.id());
-        assertEquals(equipamentoCriacaoDTO.nome(), respostaDTO.nome());
-        assertEquals(equipamentoCriacaoDTO.numeroDeSerie(), respostaDTO.numeroDeSerie());
-        assertEquals("admin@teste.com", respostaDTO.criadoPorUsuario());
-        assertFalse(respostaDTO.logs().isEmpty());
-        assertEquals("Equipamento registrado no sistema por admin@teste.com.", respostaDTO.logs().get(0).descricao());
+            Equipamento equipamentoSalvo = captor.getValue();
+            assertEquals(equipamentoCriacaoDTO.nome(), equipamentoSalvo.getNome());
+            assertEquals(1, equipamentoSalvo.getLogs().size()); // Verifica se o log foi adicionado pela entidade/serviço
+            assertEquals("Equipamento registrado no sistema por " + mockUserEmail + ".", equipamentoSalvo.getLogs().get(0).getDescricao());
 
+            verify(equipamentoRepository).save(any(Equipamento.class));
+        }
 
-        Equipamento equipamentoPersistido = equipamentoCaptor.getValue();
-        assertEquals(equipamentoCriacaoDTO.nome(), equipamentoPersistido.getNome());
-        // Verifica se o log de criação foi adicionado pela lógica do serviço
-        assertFalse(equipamentoPersistido.getLogs().isEmpty());
-        assertEquals("Equipamento registrado no sistema por admin@teste.com.", equipamentoPersistido.getLogs().get(0).getDescricao());
+        @Test
+        @DisplayName("Deve lançar RegraDeNegocioException ao criar com número de série existente")
+        void criarEquipamento_ComNumeroSerieExistente_DeveLancarExcecao() {
+            Equipamento existente = new Equipamento("Existente", equipamentoCriacaoDTO.numeroDeSerie(), "desc");
+            when(equipamentoRepository.findByNumeroDeSerie(equipamentoCriacaoDTO.numeroDeSerie())).thenReturn(Optional.of(existente));
 
-
-        verify(equipamentoRepository).findByNumeroDeSerie(equipamentoCriacaoDTO.numeroDeSerie());
-        verify(equipamentoRepository).save(any(Equipamento.class));
+            assertThrows(RegraDeNegocioException.class, () -> equipamentoAppService.criarEquipamento(equipamentoCriacaoDTO));
+            verify(equipamentoRepository, never()).save(any(Equipamento.class));
+        }
     }
 
-    @Test
-    @DisplayName("Deve lançar RegraDeNegocioException ao criar equipamento com número de série existente")
-    void criarEquipamento_ComNumeroSerieExistente_DeveLancarRegraDeNegocioException() {
-        when(equipamentoRepository.findByNumeroDeSerie(equipamentoCriacaoDTO.numeroDeSerie())).thenReturn(Optional.of(equipamentoSalvo));
+    @Nested
+    @DisplayName("Testes para buscar Equipamento")
+    class BuscarEquipamentoTests {
+        @Test
+        @DisplayName("buscarEquipamentoPorId deve retornar DTO se encontrado")
+        void buscarEquipamentoPorId_Encontrado_RetornaDTO() {
+            Equipamento mockEquip = mockEquipamentoConfigurado(mockEquipId, equipamentoCriacaoDTO, mockUserEmail, 1);
+            when(equipamentoRepository.findById(mockEquipId)).thenReturn(Optional.of(mockEquip));
 
-        RegraDeNegocioException exception = assertThrows(RegraDeNegocioException.class, () -> {
-            equipamentoAppService.criarEquipamento(equipamentoCriacaoDTO);
-        });
-        assertEquals("Número de série '" + equipamentoCriacaoDTO.numeroDeSerie() + "' já cadastrado.", exception.getMessage());
-        verify(equipamentoRepository, never()).save(any(Equipamento.class));
+            Optional<EquipamentoRespostaDTO> resultado = equipamentoAppService.buscarEquipamentoPorId(mockEquipId);
+
+            assertTrue(resultado.isPresent());
+            assertEquals(mockEquipId, resultado.get().id());
+            verify(equipamentoRepository).findById(mockEquipId);
+        }
+
+        @Test
+        @DisplayName("buscarEquipamentoPorId deve retornar Optional vazio se não encontrado")
+        void buscarEquipamentoPorId_NaoEncontrado_RetornaOptionalVazio() {
+            when(equipamentoRepository.findById("idNaoExiste")).thenReturn(Optional.empty());
+            Optional<EquipamentoRespostaDTO> resultado = equipamentoAppService.buscarEquipamentoPorId("idNaoExiste");
+            assertFalse(resultado.isPresent());
+        }
     }
 
 
-    @Test
-    @DisplayName("atualizarEquipamento deve atualizar nome e adicionar log")
-    void atualizarEquipamento_ComNovoNome_DeveAtualizarNomeEAdicionarLog() {
-        String idExistente = "equip123";
-        Equipamento equipamentoExistente = new Equipamento("Nome Antigo", "SN001", "Desc Antiga");
-        Equipamento mockEquipamentoDoBanco = spy(equipamentoExistente); // spy para poder chamar métodos reais e verificar interações
+    @Nested
+    @DisplayName("Testes para atualizarEquipamento")
+    class AtualizarEquipamentoTests {
+        @Test
+        @DisplayName("Deve atualizar nome e descrição e adicionar logs")
+        void atualizarEquipamento_ComNovosDados_DeveAtualizarEAdicionarLogs() {
+            EquipamentoAtualizacaoDTO atualizacaoDTO = new EquipamentoAtualizacaoDTO("Nome Atualizado", "Descrição Atualizada");
+            // Usar spy para interagir com o objeto real Equipamento e verificar chamadas de métod
+            Equipamento equipamentoExistenteSpy = spy(new Equipamento(equipamentoCriacaoDTO.nome(), equipamentoCriacaoDTO.numeroDeSerie(), equipamentoCriacaoDTO.descricaoDetalhada()));
+            // Simular que o equipamento já tem um log de criação
+            equipamentoExistenteSpy.adicionarLog(mockUserEmail, "Equipamento registrado no sistema por " + mockUserEmail + ".");
 
-        when(equipamentoRepository.findById(idExistente)).thenReturn(Optional.of(mockEquipamentoDoBanco));
-        when(equipamentoRepository.save(any(Equipamento.class))).thenAnswer(invocation -> invocation.getArgument(0)); // Retorna o mesmo objeto
 
-        EquipamentoAtualizacaoDTO atualizacaoDTO = new EquipamentoAtualizacaoDTO("Nome Novo", "Desc Nova");
+            when(equipamentoRepository.findById(mockEquipId)).thenReturn(Optional.of(equipamentoExistenteSpy));
+            // O save deve retornar o equipamento atualizado (o spy modificado)
+            when(equipamentoRepository.save(any(Equipamento.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        EquipamentoRespostaDTO respostaDTO = equipamentoAppService.atualizarEquipamento(idExistente, atualizacaoDTO);
 
-        assertNotNull(respostaDTO);
-        assertEquals("Nome Novo", respostaDTO.nome());
-        assertEquals("Desc Nova", respostaDTO.descricaoDetalhada());
-        // Verificar se os logs foram adicionados
-        ArgumentCaptor<Equipamento> captor = ArgumentCaptor.forClass(Equipamento.class);
-        verify(equipamentoRepository).save(captor.capture());
+            EquipamentoRespostaDTO resposta = equipamentoAppService.atualizarEquipamento(mockEquipId, atualizacaoDTO);
 
-        Equipamento equipamentoSalvoNoTeste = captor.getValue();
-        assertEquals(2, equipamentoSalvoNoTeste.getLogs().size()); // Log de alteração de nome E descrição
-        assertTrue(equipamentoSalvoNoTeste.getLogs().get(0).getDescricao().contains("Nome alterado de 'Nome Antigo' para 'Nome Novo'."));
-        assertTrue(equipamentoSalvoNoTeste.getLogs().get(1).getDescricao().contains("Descrição detalhada alterada."));
-        assertEquals("admin@teste.com", equipamentoSalvoNoTeste.getModificadoPorUsuario()); // Verificado via mock de SecurityContext
+            assertNotNull(resposta);
+            assertEquals("Nome Atualizado", resposta.nome());
+            assertEquals("Descrição Atualizada", resposta.descricaoDetalhada());
+            assertEquals(3, resposta.logs().size()); // 1 (criação) + 1 (nome) + 1 (descrição)
+            assertTrue(resposta.logs().get(1).descricao().contains("Nome alterado"));
+            assertTrue(resposta.logs().get(2).descricao().contains("Descrição detalhada alterada"));
+
+            verify(equipamentoExistenteSpy).alterarNome("Nome Atualizado", mockUserEmail);
+            verify(equipamentoExistenteSpy).alterarDescricaoDetalhada("Descrição Atualizada", mockUserEmail);
+            verify(equipamentoRepository).save(equipamentoExistenteSpy);
+        }
+
+        @Test
+        @DisplayName("Não deve atualizar nem adicionar log se DTO não traz alterações")
+        void atualizarEquipamento_SemAlteracoesNoDTO_NaoDeveSalvarOuLogar() {
+            // DTO com os mesmos dados do equipamento existente (ou campos nulos)
+            EquipamentoAtualizacaoDTO dtoSemMudancas = new EquipamentoAtualizacaoDTO(
+                    equipamentoCriacaoDTO.nome(), // Mesmo nome
+                    equipamentoCriacaoDTO.descricaoDetalhada() // Mesma descrição
+            );
+
+            Equipamento equipamentoExistente = new Equipamento(
+                    equipamentoCriacaoDTO.nome(),
+                    equipamentoCriacaoDTO.numeroDeSerie(),
+                    equipamentoCriacaoDTO.descricaoDetalhada()
+            );
+            equipamentoExistente.adicionarLog(mockUserEmail, "Log inicial");
+
+
+            when(equipamentoRepository.findById(mockEquipId)).thenReturn(Optional.of(equipamentoExistente));
+
+            EquipamentoRespostaDTO resposta = equipamentoAppService.atualizarEquipamento(mockEquipId, dtoSemMudancas);
+
+            assertNotNull(resposta);
+            assertEquals(equipamentoCriacaoDTO.nome(), resposta.nome());
+            assertEquals(1, resposta.logs().size());
+
+            verify(equipamentoRepository, never()).save(any(Equipamento.class));
+        }
+
+        @Test
+        @DisplayName("Deve lançar RecursoNaoEncontradoException ao atualizar equipamento inexistente")
+        void atualizarEquipamento_EquipamentoNaoEncontrado_DeveLancarExcecao() {
+            EquipamentoAtualizacaoDTO atualizacaoDTO = new EquipamentoAtualizacaoDTO("Nome", "Desc");
+            when(equipamentoRepository.findById("idNaoExiste")).thenReturn(Optional.empty());
+
+            assertThrows(RecursoNaoEncontradoException.class, () ->
+                    equipamentoAppService.atualizarEquipamento("idNaoExiste", atualizacaoDTO)
+            );
+            verify(equipamentoRepository, never()).save(any(Equipamento.class));
+        }
     }
 
-    @Test
-    @DisplayName("deletarEquipamento deve chamar deleteById quando equipamento existe")
-    void deletarEquipamento_QuandoEquipamentoExiste_DeveChamarDeleteById() {
-        String idExistente = "equip123";
-        when(equipamentoRepository.existsById(idExistente)).thenReturn(true);
-        doNothing().when(equipamentoRepository).deleteById(idExistente); // Mock para não fazer nada no delete
+    @Nested
+    @DisplayName("Testes para deletarEquipamento")
+    class DeletarEquipamentoTests {
+        @Test
+        @DisplayName("Deve chamar deleteById quando equipamento existe")
+        void deletarEquipamento_QuandoEquipamentoExiste_DeveChamarDeleteById() {
+            when(equipamentoRepository.existsById(mockEquipId)).thenReturn(true);
+            doNothing().when(equipamentoRepository).deleteById(mockEquipId);
 
-        assertDoesNotThrow(() -> equipamentoAppService.deletarEquipamento(idExistente));
+            assertDoesNotThrow(() -> equipamentoAppService.deletarEquipamento(mockEquipId));
 
-        verify(equipamentoRepository).existsById(idExistente);
-        verify(equipamentoRepository).deleteById(idExistente);
-    }
+            verify(equipamentoRepository).existsById(mockEquipId);
+            verify(equipamentoRepository).deleteById(mockEquipId);
+        }
 
-    @Test
-    @DisplayName("deletarEquipamento deve lançar RecursoNaoEncontradoException quando equipamento não existe")
-    void deletarEquipamento_QuandoEquipamentoNaoExiste_DeveLancarExcecao() {
-        String idNaoExistente = "naoexiste";
-        when(equipamentoRepository.existsById(idNaoExistente)).thenReturn(false);
-
-        assertThrows(RecursoNaoEncontradoException.class, () -> {
-            equipamentoAppService.deletarEquipamento(idNaoExistente);
-        });
-        verify(equipamentoRepository, never()).deleteById(idNaoExistente);
+        @Test
+        @DisplayName("Deve lançar RecursoNaoEncontradoException quando equipamento não existe para deleção")
+        void deletarEquipamento_QuandoEquipamentoNaoExiste_DeveLancarExcecao() {
+            when(equipamentoRepository.existsById("idNaoExiste")).thenReturn(false);
+            assertThrows(RecursoNaoEncontradoException.class, () ->
+                    equipamentoAppService.deletarEquipamento("idNaoExiste")
+            );
+            verify(equipamentoRepository, never()).deleteById(anyString());
+        }
     }
 }
