@@ -1,6 +1,5 @@
 package oliveiradev.inventario.domain.model.equipamentos;
 
-import oliveiradev.inventario.domain.model.LogAlteracao;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;

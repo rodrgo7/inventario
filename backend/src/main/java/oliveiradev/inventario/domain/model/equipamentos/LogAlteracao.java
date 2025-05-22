@@ -1,4 +1,4 @@
-package oliveiradev.inventario.domain.model;
+package oliveiradev.inventario.domain.model.equipamentos;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
