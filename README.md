@@ -134,7 +134,7 @@ Este projeto está licenciado sob a Licença MIT - veja o arquivo LICENSE para d
 
 ## 👥 Autores
 
-- Seu Nome - Trabalho inicial
+- oliveiradev - Trabalho inicial
 
 ## 🙏 Agradecimentos
 
