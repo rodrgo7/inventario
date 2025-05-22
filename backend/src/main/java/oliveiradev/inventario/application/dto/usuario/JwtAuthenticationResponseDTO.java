@@ -1,4 +1,4 @@
-package oliveiradev.inventario.application.dto;
+package oliveiradev.inventario.application.dto.usuario;
 
 public record JwtAuthenticationResponseDTO(
         String token,
