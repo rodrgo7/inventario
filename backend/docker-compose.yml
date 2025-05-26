@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   db:
     image: mysql:8.0
@@ -11,6 +13,15 @@ services:
     volumes:
       - inventario-db:/var/lib/mysql
 
+  mongo:
+    image: mongo:latest
+    container_name: inventario-mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - inventario-mongo:/data/db
+
   backend:
     build:
       context: .
@@ -18,12 +29,18 @@ services:
     container_name: inventario-backend
     depends_on:
       - db
+      - mongo
     ports:
       - "8080:8080"
     environment:
       - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/inventario
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=root
+      - SPRING_DATA_MONGODB_URI=mongodb://mongo:27017/estoquedb
+      - SPRING_DATA_MONGODB_USERNAME=admin
+      - SPRING_DATA_MONGODB_PASSWORD=admin
+      - APP_JWT_SECRET=qur8LP7qykR7SQGxiQ+pn2Lyi2wel7fiJAKBUpgjlDszoFUVcV9IOiL7KDxQWIPKTYkzc7iyPDBK6ABUJ7L+uQ==
 
 volumes:
   inventario-db:
+  inventario-mongo:

@@ -1,24 +1,35 @@
 spring:
   application:
     name: gerenciador-estoque
+
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+
   data:
     mongodb:
-      uri: mongodb://localhost:27017/estoquedb
-      username: admin
-      password:
+      uri: ${SPRING_DATA_MONGODB_URI}
+      username: ${SPRING_DATA_MONGODB_USERNAME}
+      password: ${SPRING_DATA_MONGODB_PASSWORD}
+
+  # logging
   logging:
     level:
-      org.springframework.security: DEBUG # Mostra mais detalhes do Spring Security
-      oliveiradev.inventario.infra.security: DEBUG # Mostra logs DEBUG do seu pacote de segurança
-      oliveiradev.inventario.interfaces.controller: DEBUG # Mostra logs DEBUG dos seus controllers
-  environment:
-    - APP_JWT_SECRET=${APP_JWT_SECRET_CONFIG}
-    - SPRING_DATA_MONGODB_PASSWORD=${MONGO_PASSWORD_CONFIG}
-  # kafka:
-    # bootstrap-servers: localhost:9092
+      org.springframework.security: DEBUG
+      oliveiradev.inventario.infra.security: DEBUG
+      oliveiradev.inventario.interfaces.controller: DEBUG
 
 app:
   jwt:
-    secret: qur8LP7qykR7SQGxiQ+pn2Lyi2wel7fiJAKBUpgjlDszoFUVcV9IOiL7KDxQWIPKTYkzc7iyPDBK6ABUJ7L+uQ==
-    expiration-ms: 3600000 # 1 hora em milissegundos
-    # refresh-token-expiration-ms: 86400000 # Ex: 24 horas, se for implementar refresh tokens
+    secret: ${APP_JWT_SECRET}
+    expiration-ms: 3600000 # 1 hora
