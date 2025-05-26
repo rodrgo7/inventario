@@ -11,6 +11,9 @@ spring:
       org.springframework.security: DEBUG # Mostra mais detalhes do Spring Security
       oliveiradev.inventario.infra.security: DEBUG # Mostra logs DEBUG do seu pacote de segurança
       oliveiradev.inventario.interfaces.controller: DEBUG # Mostra logs DEBUG dos seus controllers
+  environment:
+    - APP_JWT_SECRET=${APP_JWT_SECRET_CONFIG}
+    - SPRING_DATA_MONGODB_PASSWORD=${MONGO_PASSWORD_CONFIG}
   # kafka:
     # bootstrap-servers: localhost:9092
 
