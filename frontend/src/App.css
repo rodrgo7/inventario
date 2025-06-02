@@ -1,0 +1,40 @@
+/* src/App.css */
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  
+  /* Gradiente de fundo inspirado na imagem DALL-E */
+  /* Ajuste as cores e ângulos conforme sua preferência */
+  background: linear-gradient(145deg, #2c1a4d 10%, #4f228a 50%, #7f00ff 100%);
+  /* Exemplo alternativo um pouco mais avermelhado/rosado: */
+  /* background: linear-gradient(135deg, #2a0a4a 0%, #4a1a3c 40%, #780b54 100%); */
+
+  background-attachment: fixed; /* Para o gradiente não rolar */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  overflow-x: hidden; /* Para evitar barras de rolagem horizontais */
+}
+
+/* Remove estilos conflitantes da classe .App se o body já cuida do layout principal */
+.App {
+  width: 100%; /* Opcional, para o caso de precisar de um container App */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.App-header h1 { /* Se você decidir usar o h1 no App.jsx */
+  color: #e0e0e0; /* Cor clara para o título */
+  font-size: 2.5rem; /* Tamanho do título */
+  margin-bottom: 40px; /* Espaço abaixo do título */
+  font-weight: 200; /* Fonte mais leve */
+  letter-spacing: 1.5px;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
