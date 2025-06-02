@@ -3,9 +3,9 @@ spring:
     name: gerenciador-estoque
 
   datasource:
-    url: ${SPRING_DATASOURCE_URL}
-    username: ${SPRING_DATASOURCE_USERNAME}
-    password: ${SPRING_DATASOURCE_PASSWORD}
+    url: jdbc:mysql://localhost:3307/inventario
+    username: root
+    password: root
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
@@ -18,11 +18,8 @@ spring:
 
   data:
     mongodb:
-      uri: ${SPRING_DATA_MONGODB_URI}
-      username: ${SPRING_DATA_MONGODB_USERNAME}
-      password: ${SPRING_DATA_MONGODB_PASSWORD}
+      uri: mongodb://localhost:27017/estoquedb
 
-  # logging
   logging:
     level:
       org.springframework.security: DEBUG
@@ -31,5 +28,6 @@ spring:
 
 app:
   jwt:
-    secret: ${APP_JWT_SECRET}
+    # Este segredo é usado pelo JwtTokenProvider
+    secret: k1ZXzu4t/WpgHtynifYBjpPGFAUUrzs9185YgPnY5WgCf1ZhoOMCbkwmjjkxmWcm2+bFt50bT+HJtk8fWfSPHQ==
     expiration-ms: 3600000 # 1 hora
