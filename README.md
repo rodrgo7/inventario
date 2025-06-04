@@ -1,143 +1,94 @@
-# Sistema de Gerenciamento de Estoque
+# Sistema de Inventário
 
-Um robusto sistema de gerenciamento de estoque construído com Spring Boot, apresentando autenticação segura, integração com MongoDB e arquitetura orientada a eventos.
+Este é um sistema de gerenciamento de inventário desenvolvido com uma arquitetura moderna e escalável.
 
-## 🚀 Funcionalidades
+## 🏗️ Arquitetura
 
-- **Autenticação e Autorização**
-  - Autenticação baseada em JWT
-  - Manipulação segura de senhas
-  - Controle de acesso baseado em funções
+O projeto é composto por dois componentes principais:
 
-- **Gerenciamento de Estoque**
-  - Rastreamento de produtos
-  - Controle de estoque
-  - Atualizações em tempo real do inventário
+### Backend
+- Desenvolvido em Java com Spring Boot
+- Expõe uma API REST na porta 8080
+- Configurado para ambiente de produção
+- Gerenciado com Maven
 
-- **Arquitetura Orientada a Eventos**
-  - Integração com Kafka para processamento de eventos
-  - Operações assíncronas
-  - Notificações em tempo real
+### Frontend
+- Aplicação web moderna
+- Servido através do Nginx
+- Acessível na porta 3000
+- Construído com Vite
 
-## 🛠️ Stack Tecnológica
+## 🚀 Como Executar
 
-- **Backend**
-  - Java 21
-  - Spring Boot 3.4.5
-  - Spring Security
-  - Spring Data MongoDB
-  - Spring Kafka
-  - Autenticação JWT
+### Pré-requisitos
+- Docker
+- Docker Compose
 
-- **Banco de Dados**
-  - MongoDB
+### Passos para Execução
 
-- **Message Broker**
-  - Apache Kafka
+1. Clone o repositório
+```bash
+git clone [URL_DO_REPOSITÓRIO]
+cd inventario
+```
 
-## 📋 Pré-requisitos
+2. Execute com Docker Compose
+```bash
+docker-compose up -d
+```
 
-- Java 21 ou superior
-- MongoDB 6.0 ou superior
-- Apache Kafka (opcional, para processamento de eventos)
-- Maven 3.6 ou superior
+Após a execução, os serviços estarão disponíveis em:
+- Frontend: http://localhost:3000
+- Backend: http://localhost:8080
 
 ## 🔧 Configuração
 
-A aplicação utiliza as seguintes configurações padrão:
+### Backend
+- Porta: 8080
+- Perfil: prod
+- Configurações adicionais podem ser ajustadas no arquivo `application.properties`
 
-```yaml
-spring:
-  data:
-    mongodb:
-      uri: mongodb://localhost:27017/estoquedb
-      username: admin
-      password: # Defina sua senha aqui
+### Frontend
+- Porta: 3000
+- Configurado para se comunicar com o backend
+- Nginx configurado para servir a aplicação
 
-app:
-  jwt:
-    secret: # Seu segredo JWT
-    expiration-ms: 3600000 # 1 hora
-```
+## 🛠️ Tecnologias Utilizadas
 
-## 🚀 Como Começar
+- **Backend**
+  - Java
+  - Spring Boot
+  - Maven
 
-1. **Clone o repositório**
-   ```bash
-   git clone [url-do-seu-repositorio]
-   cd inventario
-   ```
+- **Frontend**
+  - Vite
+  - Nginx
 
-2. **Configure o MongoDB**
-   - Instale o MongoDB se ainda não estiver instalado
-   - Crie um banco de dados chamado `estoquedb`
-   - Atualize as credenciais do MongoDB no arquivo `application.yaml`
+- **Infraestrutura**
+  - Docker
+  - Docker Compose
 
-3. **Compile o projeto**
-   ```bash
-   mvn clean install
-   ```
+## 📝 Notas de Desenvolvimento
 
-4. **Execute a aplicação**
-   ```bash
-   mvn spring-boot:run
-   ```
+Para desenvolvimento local, você pode executar os serviços separadamente:
 
-## 🔐 Segurança
-
-A aplicação implementa autenticação baseada em JWT com as seguintes características:
-- Armazenamento seguro de senhas
-- Autenticação baseada em tokens
-- Controle de acesso baseado em funções
-- Expiração de token configurável
-
-## 📦 Estrutura do Projeto
-
-```
-src/main/java/oliveiradev/inventario/
-├── application/    # Serviços da aplicação e casos de uso
-├── domain/        # Modelos de domínio e lógica de negócios
-├── infra/         # Componentes de infraestrutura
-├── interfaces/    # Controladores da API e DTOs
-└── util/          # Classes utilitárias
-```
-
-## 🧪 Testes
-
-O projeto inclui cobertura abrangente de testes:
-- Testes unitários
-- Testes de integração
-- Testes com containers para MongoDB
-
-Execute os testes usando:
+### Backend
 ```bash
-mvn test
+cd backend
+./mvnw spring-boot:run
 ```
 
-## 📝 Documentação da API
+### Frontend
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
-A documentação da API está disponível em:
-- Swagger UI: `http://localhost:8080/swagger-ui.html`
-- Especificação OpenAPI: `http://localhost:8080/v3/api-docs`
+## 🤝 Contribuindo
 
-## 🤝 Como Contribuir
-
-1. Faça um fork do repositório
-2. Crie sua branch de feature (`git checkout -b feature/NovaFuncionalidade`)
-3. Faça commit das suas alterações (`git commit -m 'Adiciona nova funcionalidade'`)
-4. Faça push para a branch (`git push origin feature/NovaFuncionalidade`)
+1. Faça um Fork do projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
+3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
+4. Push para a branch (`git push origin feature/AmazingFeature`)
 5. Abra um Pull Request
-
-## 📄 Licença
-
-Este projeto está licenciado sob a Licença MIT - veja o arquivo LICENSE para detalhes.
-
-## 👥 Autores
-
-- oliveiradev - Trabalho inicial
-
-## 🙏 Agradecimentos
-
-- Equipe Spring Boot
-- Equipe MongoDB
-- Equipe Apache Kafka 
