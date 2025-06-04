@@ -1,41 +1,41 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import LoginForm from './components/LoginForm'; 
+
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import LoginForm from './components/LoginForm';
 import Dashboard from './components/Dashboard';
-import authService from './services/authService';
+import MainLayout from './components/layout/MainLayout';
+import UsuarioDashboard from './components/UsuarioDashboard';
+import ProtectedRoute from './routes/ProtectedRoute';
 
-function PrivateRoute({ children }) {
-  const token = authService.getCurrentUserToken();
-  return token ? children : <Navigate to="/login" replace />;
-}
-
-function App() {
-  const token = authService.getCurrentUserToken();
-
+const App = () => {
   return (
     <Router>
-      <div className="App">
-        <Routes>
-          <Route 
-            path="/login" 
-            element={!token ? <LoginForm /> : <Navigate to="/dashboard" replace />} 
-          />
+      <Routes>
+        <Route path="/login" element={<LoginForm />} />
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <MainLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<Dashboard />} />
+
           <Route
-            path="/dashboard"
+            path="usuarios"
             element={
-              <PrivateRoute>
-                <Dashboard /> 
-              </PrivateRoute>
+              <ProtectedRoute requiredRole="ADMIN">
+                <UsuarioDashboard />
+              </ProtectedRoute>
             }
           />
-          <Route 
-            path="*" 
-            element={<Navigate to={token ? "/dashboard" : "/login"} replace />} 
-          />
-        </Routes>
-      </div>
+        </Route>
+        <Route path="*" element={<p style={{ padding: 20, color: 'white' }}>Página não encontrada</p>} />
+        <Route path="/unauthorized" element={<p style={{ padding: 20, color: 'white' }}>Acesso não autorizado</p>} />
+      </Routes>
     </Router>
   );
-}
+};
 
 export default App;
