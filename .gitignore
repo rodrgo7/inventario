@@ -31,3 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Ignorar arquivos de scripts MongoDB
+scripts-mongodb/InsertEquipamentos.txt
+scripts-mongodb/InsertUsuarios.txt
