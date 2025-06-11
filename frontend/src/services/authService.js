@@ -9,7 +9,10 @@ const login = async (email, senha) => {
       senha,
     });
     if (response.data.token) {
-      localStorage.setItem('jwtToken', response.data.token);
+      // Armazena o token sob a chave padrao 'token' para
+      // que outras partes da aplicação (interceptores, rotas protegidas,
+      // etc.) possam recuperá-lo de maneira consistente.
+      localStorage.setItem('token', response.data.token);
     }
     return response.data;
   } catch (error) {
@@ -19,11 +22,11 @@ const login = async (email, senha) => {
 };
 
 const logout = () => {
-  localStorage.removeItem('jwtToken');
+  localStorage.removeItem('token');
 };
 
 const getCurrentUserToken = () => {
-  return localStorage.getItem('jwtToken');
+  return localStorage.getItem('token');
 };
 
 const authService = {
