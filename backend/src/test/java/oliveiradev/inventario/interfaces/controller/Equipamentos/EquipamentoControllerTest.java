@@ -159,7 +159,10 @@ class EquipamentoControllerTest {
         @WithMockUser(username = "admin@test.com", roles = {"USUARIO_ADMIN"})
         void listarTodosEquipamentos_ComoAdmin_DeveRetornarLista() throws Exception {
             when(equipamentoAppService.listarTodosEquipamentos()).thenReturn(List.of(equipamentoRespostaDTO));
-            mockMvc.perform(get("/api/equipamentos")).andExpect(status().isOk());
+            mockMvc.perform(get("/api/equipamentos"))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$", hasSize(1)))
+                    .andExpect(jsonPath("$[0].id", is(equipamentoIdExistente)));
         }
 
 
