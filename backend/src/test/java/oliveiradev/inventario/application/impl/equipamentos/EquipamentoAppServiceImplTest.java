@@ -169,7 +169,7 @@ class EquipamentoAppServiceImplTest {
         @DisplayName("Deve atualizar nome e descrição e adicionar logs")
         void atualizarEquipamento_ComNovosDados_DeveAtualizarEAdicionarLogs() {
             EquipamentoAtualizacaoDTO atualizacaoDTO = new EquipamentoAtualizacaoDTO("Nome Atualizado", "Descrição Atualizada");
-            // Usar spy para interagir com o objeto real Equipamento e verificar chamadas de métod
+            // Usar spy para interagir com o objeto real Equipamento e verificar chamadas de métodos
             Equipamento equipamentoExistenteSpy = spy(new Equipamento(equipamentoCriacaoDTO.nome(), equipamentoCriacaoDTO.numeroDeSerie(), equipamentoCriacaoDTO.descricaoDetalhada()));
             // Simular que o equipamento já tem um log de criação
             equipamentoExistenteSpy.adicionarLog(mockUserEmail, "Equipamento registrado no sistema por " + mockUserEmail + ".");
