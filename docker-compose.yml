@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   mongo:
-    image: mongo
+    image: mongo:latest
     container_name: inventario-mongo
     ports:
       - "27017:27017"
@@ -10,31 +10,53 @@ services:
       - inventario-net
     volumes:
       - mongo-data:/data/db
+    environment:
+      - MONGO_INITDB_DATABASE=inventario
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   backend:
     build:
       context: ./backend
+      dockerfile: Dockerfile
     container_name: inventario-backend
     ports:
       - "8080:8080"
     depends_on:
-      - mongo
+      mongo:
+        condition: service_healthy
     environment:
-      - SPRING_PROFILES_ACTIVE=dev
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_DATA_MONGODB_URI=mongodb://mongo:27017/inventario
     networks:
       - inventario-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+    container_name: inventario-frontend
     ports:
-      - "3000:3000"
+      - "3000:80"
     depends_on:
-    - backend
+      - backend
+    environment:
+      - VITE_API_URL=http://localhost:8080
+    networks:
+      - inventario-net
 
 networks:
   inventario-net:
+    driver: bridge
 
 volumes:
   mongo-data:
+    driver: local

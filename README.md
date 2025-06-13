@@ -1,94 +1,72 @@
 # Sistema de Inventário
 
-Este é um sistema de gerenciamento de inventário desenvolvido com uma arquitetura moderna e escalável.
+Um sistema completo de gerenciamento de inventário construído com Spring Boot, React e MongoDB.
 
-## 🏗️ Arquitetura
+## Estrutura do Projeto
 
-O projeto é composto por dois componentes principais:
+```
+inventario/
+├── backend/         # Aplicação Spring Boot
+├── frontend/        # Aplicação React
+├── scripts-mongodb/ # Scripts de inicialização do MongoDB
+└── docker-compose.yml
+```
 
-### Backend
-- Desenvolvido em Java com Spring Boot
-- Expõe uma API REST na porta 8080
-- Configurado para ambiente de produção
-- Gerenciado com Maven
+## Início Rápido
 
-### Frontend
-- Aplicação web moderna
-- Servido através do Nginx
-- Acessível na porta 3000
-- Construído com Vite
-
-## 🚀 Como Executar
-
-### Pré-requisitos
-- Docker
-- Docker Compose
-
-### Passos para Execução
-
-1. Clone o repositório
+1. Clone o repositório:
 ```bash
-git clone [URL_DO_REPOSITÓRIO]
+git clone [url-do-repositorio]
 cd inventario
 ```
 
-2. Execute com Docker Compose
+2. Inicie a aplicação usando Docker Compose:
 ```bash
 docker-compose up -d
 ```
 
-Após a execução, os serviços estarão disponíveis em:
+A aplicação estará disponível em:
 - Frontend: http://localhost:3000
-- Backend: http://localhost:8080
+- API Backend: http://localhost:8080
+- MongoDB: localhost:27017
 
-## 🔧 Configuração
+## Desenvolvimento
 
-### Backend
-- Porta: 8080
-- Perfil: prod
-- Configurações adicionais podem ser ajustadas no arquivo `application.properties`
+### Pré-requisitos
+- Java 17 ou superior
+- Node.js 18 ou superior
+- Docker e Docker Compose
+- MongoDB (se executando localmente)
 
-### Frontend
-- Porta: 3000
-- Configurado para se comunicar com o backend
-- Nginx configurado para servir a aplicação
+### Executando Localmente
 
-## 🛠️ Tecnologias Utilizadas
-
-- **Backend**
-  - Java
-  - Spring Boot
-  - Maven
-
-- **Frontend**
-  - Vite
-  - Nginx
-
-- **Infraestrutura**
-  - Docker
-  - Docker Compose
-
-## 📝 Notas de Desenvolvimento
-
-Para desenvolvimento local, você pode executar os serviços separadamente:
-
-### Backend
+1. Backend:
 ```bash
 cd backend
 ./mvnw spring-boot:run
 ```
 
-### Frontend
+2. Frontend:
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
 
-## 🤝 Contribuindo
+## Documentação
 
-1. Faça um Fork do projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
-3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
-4. Push para a branch (`git push origin feature/AmazingFeature`)
+Para documentação detalhada sobre cada componente, consulte:
+- [Documentação do Backend](./backend/README.md)
+- [Documentação do Frontend](./frontend/README.md)
+
+## Contribuindo
+
+1. Faça um Fork do repositório
+2. Crie uma branch para sua feature (`git checkout -b feature/nova-feature`)
+3. Commit suas mudanças (`git commit -m 'Adiciona nova feature'`)
+4. Push para a branch (`git push origin feature/nova-feature`)
 5. Abra um Pull Request
+
+## Licença
+
+Este projeto está licenciado sob a Licença MIT - veja o arquivo LICENSE para detalhes.
