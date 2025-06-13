@@ -11,7 +11,7 @@ services:
     volumes:
       - mongo-data:/data/db
     environment:
-      - MONGO_INITDB_DATABASE=inventario
+      - MONGO_INITDB_DATABASE=estoquedb
     healthcheck:
       test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
       interval: 10s
@@ -30,7 +30,7 @@ services:
         condition: service_healthy
     environment:
       - SPRING_PROFILES_ACTIVE=prod
-      - SPRING_DATA_MONGODB_URI=mongodb://mongo:27017/inventario
+      - SPRING_DATA_MONGODB_URI=mongodb://mongo:27017/estoquedb
     networks:
       - inventario-net
     healthcheck:

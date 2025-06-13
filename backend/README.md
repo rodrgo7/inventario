@@ -73,7 +73,7 @@ A aplicação pode ser configurada através do `application.properties` ou vari�
 server.port=8080
 
 # MongoDB
-spring.data.mongodb.uri=mongodb://localhost:27017/inventario
+spring.data.mongodb.uri=mongodb://localhost:27017/estoquedb
 
 # Segurança
 spring.security.user.name=admin
@@ -96,4 +96,4 @@ spring.security.user.password=admin
 
 ## Contribuindo
 
-Por favor, leia o [README.md](../README.md) principal para detalhes sobre nosso código de conduta e o processo para enviar pull requests. 
+Por favor, leia o [README.md](../README.md) principal para detalhes sobre nosso código de conduta e o processo para enviar pull requests.

@@ -31,7 +31,8 @@ class UsuarioRepositoryTest {
 
     @DynamicPropertySource
     static void setProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.data.mongodb.uri", mongoDBContainer::getReplicaSetUrl);
+        String connectionString = mongoDBContainer.getConnectionString() + "/estoquedb";
+        registry.add("spring.data.mongodb.uri", () -> connectionString);
     }
 
     @Autowired

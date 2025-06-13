@@ -33,8 +33,8 @@ class EquipamentoRepositoryTest {
 
     @DynamicPropertySource
     static void setProperties(DynamicPropertyRegistry registry) {
-        // Usar getConnectionString() para uma instância standalone simples do MongoDB via Testcontainers
-        registry.add("spring.data.mongodb.uri", mongoDBContainer::getConnectionString);
+        String connectionString = mongoDBContainer.getConnectionString() + "/estoquedb";
+        registry.add("spring.data.mongodb.uri", () -> connectionString);
     }
 
     @Autowired
