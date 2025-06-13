@@ -36,6 +36,9 @@ build/
 scripts-mongodb/InsertEquipamentos.txt
 scripts-mongodb/InsertUsuarios.txt
 
+### NODE ###
+node_modules/
+
 # Ignorar rebuilds
 rebuild.sh
 rebuild_windows.bat
