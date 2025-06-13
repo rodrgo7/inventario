@@ -1,28 +1,40 @@
 version: '3.8'
 
 services:
+  mongo:
+    image: mongo
+    container_name: inventario-mongo
+    ports:
+      - "27017:27017"
+    networks:
+      - inventario-net
+    volumes:
+      - mongo-data:/data/db
+
   backend:
     build:
       context: ./backend
-    container_name: backend
+    container_name: inventario-backend
     ports:
       - "8080:8080"
+    depends_on:
+      - mongo
     environment:
-      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_PROFILES_ACTIVE=dev
     networks:
-      - app-network
+      - inventario-net
 
   frontend:
     build:
       context: ./frontend
-    container_name: frontend
+      dockerfile: Dockerfile
     ports:
-      - "3000:80"
+      - "3000:3000"
     depends_on:
-      - backend
-    networks:
-      - app-network
+    - backend
 
 networks:
-  app-network:
-    driver: bridge
+  inventario-net:
+
+volumes:
+  mongo-data:
