@@ -1,4 +1,4 @@
-package oliveiradev.inventario.interfaces.controller;
+package oliveiradev.inventario.interfaces.controller.Equipamentos;
 
 import oliveiradev.inventario.application.dto.equipamento.EquipamentoAtualizacaoDTO;
 import oliveiradev.inventario.application.dto.equipamento.EquipamentoCriacaoDTO;

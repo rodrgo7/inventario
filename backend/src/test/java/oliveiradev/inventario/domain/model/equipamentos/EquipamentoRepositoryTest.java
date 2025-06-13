@@ -1,7 +1,8 @@
-package oliveiradev.inventario.domain.repository;
+package oliveiradev.inventario.domain.model.equipamentos;
 
 import oliveiradev.inventario.domain.model.equipamentos.Equipamento;
 import oliveiradev.inventario.domain.model.equipamentos.LogAlteracao;
+import oliveiradev.inventario.domain.repository.EquipamentoRepository;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

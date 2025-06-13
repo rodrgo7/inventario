@@ -1,4 +1,4 @@
-package oliveiradev.inventario.interfaces.controller;
+package oliveiradev.inventario.interfaces.controller.Usuario;
 
 import oliveiradev.inventario.application.dto.usuario.LoginRequestDTO;
 import oliveiradev.inventario.application.dto.usuario.UsuarioCriacaoDTO;

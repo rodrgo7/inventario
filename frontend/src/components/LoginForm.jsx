@@ -21,12 +21,21 @@ const LoginForm = () => {
       const data = await login(email, senha);
       console.log('Login bem-sucedido, token:', data.token);
       setLoading(false);
-      navigate('/dashboard');
+      navigate('/');
     } catch (error) {
-      const message = error.detail || error.message || 'Falha no login. Verifique suas credenciais.';
+      console.error("Erro detalhado:", error);
+      let message = 'Erro de rede ou servidor não respondeu';
+      
+      if (error.response) {
+        // O servidor respondeu com um status de erro
+        message = error.response.data?.message || `Erro ${error.response.status}: ${error.response.statusText}`;
+      } else if (error.request) {
+        // A requisição foi feita mas não houve resposta
+        message = 'Servidor não está respondendo. Verifique se o servidor está rodando.';
+      }
+      
       setErrorMessage(message);
       setLoading(false);
-      console.error("Erro no login:", error);
     }
   };
 

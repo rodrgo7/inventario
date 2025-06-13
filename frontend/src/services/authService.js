@@ -9,7 +9,7 @@ const login = async (email, senha) => {
       senha,
     });
     if (response.data.token) {
-      localStorage.setItem('jwtToken', response.data.token);
+      localStorage.setItem('token', response.data.token);
     }
     return response.data;
   } catch (error) {
@@ -19,11 +19,11 @@ const login = async (email, senha) => {
 };
 
 const logout = () => {
-  localStorage.removeItem('jwtToken');
+  localStorage.removeItem('token');
 };
 
 const getCurrentUserToken = () => {
-  return localStorage.getItem('jwtToken');
+  return localStorage.getItem('token');
 };
 
 const authService = {
