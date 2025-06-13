@@ -6,7 +6,6 @@ const Sidebar = () => {
 
   const menuItems = [
     { nome: 'Painel', path: '/', icone: '🏠' },
-    { nome: 'Emitente', path: '/emitente', icone: '🏢' },
     { nome: 'Pessoas', path: '/pessoas', icone: '👥' },
     { nome: 'Produtos', path: '/produtos', icone: '📦' },
     { nome: 'Painel Estoque', path: '/estoque/painel', icone: '📊' },

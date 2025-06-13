@@ -5,6 +5,10 @@ import LoginForm from './components/LoginForm';
 import Dashboard from './components/Dashboard';
 import MainLayout from './components/layout/MainLayout';
 import UsuarioDashboard from './components/UsuarioDashboard';
+import PessoasDashboard from './components/PessoasDashboard';
+import ProdutosDashboard from './components/ProdutosDashboard';
+import EstoquePainel from './components/EstoquePainel';
+import EstoqueMovimentacoes from './components/EstoqueMovimentacoes';
 import ProtectedRoute from './routes/ProtectedRoute';
 
 const App = () => {
@@ -21,7 +25,10 @@ const App = () => {
           }
         >
           <Route index element={<Dashboard />} />
-
+          <Route path="pessoas" element={<PessoasDashboard />} />
+          <Route path="produtos" element={<ProdutosDashboard />} />
+          <Route path="estoque/painel" element={<EstoquePainel />} />
+          <Route path="estoque/movimentacoes" element={<EstoqueMovimentacoes />} />
           <Route
             path="usuarios"
             element={
